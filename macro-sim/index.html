@@ -475,8 +475,8 @@ function updateModel(){
   S.conf=Math.max(10,Math.min(190,S.conf));
 
   // Debt (scales faster: higher spending multiplier + higher base)
-  const qSpend=100+(S.spend-50)*2.2;  // was 80+1.6, now 100+2.2: more spending at high levels
-  const qRev=S.gdp*.035;              // was .04, now .035: less revenue = bigger deficits
+  const qSpend=90+(S.spend-50)*2.0;   // base spending 90, multiplier 2.0
+  const qRev=S.gdp*.038;              // revenue rate .038: mild austerity can balance the budget
   const dServ=S.debt*(S.rate/100)*.25;
   S.debt+=qSpend+dServ-qRev;
   S.debt=Math.max(0,S.debt);
