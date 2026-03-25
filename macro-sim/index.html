@@ -474,11 +474,23 @@ function updateModel(){
   S.conf+=.3*(tC-S.conf);
   S.conf=Math.max(10,Math.min(190,S.conf));
 
-  // Debt (scales faster: higher spending multiplier + higher base)
-  const qSpend=90+(S.spend-50)*2.0;   // base spending 90, multiplier 2.0
-  const qRev=S.gdp*.038;              // revenue rate .038: mild austerity can balance the budget
-  const dServ=S.debt*(S.rate/100)*.25;
-  S.debt+=qSpend+dServ-qRev;
+  // Debt: separate income and spending sides
+  // Tax revenue scales with GDP — strong economy = more tax income
+  const taxIncome=S.gdp*0.042;
+  // Progressive bonus: booming economy generates disproportionately more revenue
+  const progressiveBonus=S.gdp>2200?(S.gdp-2200)*0.012:0;
+  const totalRevenue=taxIncome+progressiveBonus;
+
+  // Government expenditure: player's spending choice + interest on existing debt
+  const qSpend=82+(S.spend-50)*2.0;
+  const dServ=S.debt>0?S.debt*(S.rate/100)*.25:0;
+  const totalExpense=qSpend+dServ;
+
+  // Net: revenue minus expense. Negative = surplus (debt shrinks)
+  let dChange=totalExpense-totalRevenue;
+  // Surplus pays down debt 1.6x faster (bond buybacks, credibility boost)
+  if(dChange<0) dChange*=1.6;
+  S.debt+=dChange;
   S.debt=Math.max(0,S.debt);
 }
 
